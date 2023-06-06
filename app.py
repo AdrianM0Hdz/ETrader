@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request
 
-from ..application.register_buyer import RegisterBuyer as RegisterBuyerService
-from .persistence.buyer.mock.repository import MockBuyerRepository
+from .application.register_buyer import RegisterBuyer as RegisterBuyerService
+from .infrastructure.persistence.buyer.mock.repository import MockBuyerRepository
 
 app = Flask(__name__)
 buyer_repo = MockBuyerRepository()
