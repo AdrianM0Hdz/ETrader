@@ -16,7 +16,7 @@ class Entity(ABC, Generic[TId]):
         raise ValueError("ID OF AN ENTITY IS INMUTABLE")
 
     def __init__(self, id: TId):
-        assert type(id) == TId
+        assert issubclass(type(id), ValueObject)
         self._id = id
 
     def __eq__(self, other_entity: "Entity") -> bool:

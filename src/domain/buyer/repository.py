@@ -17,10 +17,6 @@ class BuyerRepository(Repository, ABC):
         ...
 
     @abstractmethod
-    def get_by_name(self, name: Name):
-        ...
-
-    @abstractmethod
     def commit(self, item: Buyer):
         ...
 

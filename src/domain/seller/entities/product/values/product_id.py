@@ -1,5 +1,5 @@
 from typing import Tuple
-from ...common.value_object import ValueObject
+from domain.common.value_object import ValueObject
 
 
 class ProductId(ValueObject):

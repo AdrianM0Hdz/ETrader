@@ -1,7 +1,7 @@
-from domain.common.values import Name
-from .....domain.buyer import Buyer
-from .....domain.buyer.values import BuyerId
-from .....domain.buyer.repository import BuyerRepository
+from src.domain.common.values import Name
+from src.domain.buyer import Buyer
+from src.domain.buyer.values import BuyerId
+from src.domain.buyer.repository import BuyerRepository
 
 
 class MockBuyerRepository(BuyerRepository):
