@@ -8,27 +8,13 @@ from ..common.values import Name, NameData, Description, DescriptionData
 from ..buyer.values import BuyerId
 
 from .entities.product.values import ProductId, Price
-from .entities.product.product import Product, ProductData
+from .entities.product.product import Product
 
-from .entities.purchase.purchase import Purchase, PurchaseData
+from .entities.purchase.purchase import Purchase
 from .entities.purchase.values import PurchaseId, Quantity
 from .entities.purchase.enums import PurchaseStatus
 
 from .values import SellerId
-
-
-@dataclass(frozen=True)
-class ProductAndPurchaseData:
-    product: ProductData
-    purchases: List[PurchaseData]
-
-
-@dataclass(frozen=True)
-class SellerData:
-    id: str
-    name: NameData
-    description: DescriptionData
-    products: List[ProductAndPurchaseData]
 
 
 class Seller(AggregateRoot[SellerId]):
@@ -123,24 +109,3 @@ class Seller(AggregateRoot[SellerId]):
     def mark_purchase_canceled(self, product_id: ProductId, purchase_id: PurchaseId):
         purchase = self._get_purchase(product_id, purchase_id)
         purchase.status = PurchaseStatus.CANCELED
-
-    def make_product_and_purchase_data(
-        self, data: Tuple[Product, List[Purchase]]
-    ) -> ProductAndPurchaseData:
-        product = data[0]
-        purchase_list = data[1]
-        return ProductAndPurchaseData(
-            product=product.get_data(),
-            purchases=list(map(lambda purchase: purchase.get_data(), purchase_list)),
-        )
-
-    def make_product_and_purchase_data_list(self) -> List[ProductAndPurchaseData]:
-        return list(map(self.make_product_and_purchase_data, self.__products.items()))
-
-    def get_data(self) -> SellerData:
-        return SellerData(
-            id=self.id.value,
-            name=self.name.get_data(),
-            description=self.description.get_data(),
-            products=self.make_product_and_purchase_data_list(),
-        )
