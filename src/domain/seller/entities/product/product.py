@@ -1,8 +1,17 @@
+from dataclasses import dataclass
 from uuid import uuid1
 
 from domain.common.aggregate_root import AggregateRoot
-from domain.common.values import Name, Description
-from .values import ProductId, Price
+from domain.common.values import Name, NameData, Description, DescriptionData
+from .values import ProductId, Price, PriceData
+
+
+@dataclass(frozen=True)
+class ProductData:
+    id: str
+    name: NameData
+    description: DescriptionData
+    price: PriceData
 
 
 class Product(AggregateRoot[ProductId]):
@@ -56,3 +65,11 @@ class Product(AggregateRoot[ProductId]):
     def price(self, new_price: Price):
         assert isinstance(new_price, Price)
         self.__price = new_price
+
+    def get_data(self) -> ProductData:
+        return ProductData(
+            id=self.id.value,
+            name=self.name.get_data(),
+            description=self.description.get_data(),
+            price=self.price.get_data(),
+        )

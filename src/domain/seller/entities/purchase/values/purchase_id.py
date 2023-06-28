@@ -1,5 +1,6 @@
+from dataclasses import dataclass
 from typing import Tuple
-from ...common.value_object import ValueObject
+from src.domain.common.value_object import ValueObject
 
 
 class PurchaseId(ValueObject):

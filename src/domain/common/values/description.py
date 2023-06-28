@@ -1,5 +1,11 @@
+from dataclasses import dataclass
 from typing import Tuple
 from ..value_object import ValueObject
+
+
+@dataclass(frozen=True)
+class DescriptionData:
+    value: str
 
 
 class Description(ValueObject):
@@ -11,3 +17,6 @@ class Description(ValueObject):
 
     def get_equality_componets(self) -> Tuple:
         return tuple([self.value])
+
+    def get_data(self) -> DescriptionData:
+        return DescriptionData(self.value)

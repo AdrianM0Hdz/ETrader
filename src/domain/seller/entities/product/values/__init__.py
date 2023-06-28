@@ -1,2 +1,2 @@
 from .product_id import ProductId
-from .price import Price
+from .price import Price, PriceData

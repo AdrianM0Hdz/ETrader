@@ -1,7 +1,7 @@
 """
 Creates mongodb representation of user entity
 
-Data Model: 
+MongoDB Data Model: 
 {
     "id": <string uuid>
     "name": <string>

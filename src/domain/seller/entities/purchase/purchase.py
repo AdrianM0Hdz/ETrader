@@ -1,4 +1,6 @@
+from dataclasses import dataclass
 from uuid import uuid1
+
 
 from domain.common.aggregate_root import AggregateRoot
 
@@ -7,6 +9,14 @@ from domain.buyer.values import BuyerId
 from .values import PurchaseId, Quantity
 
 from .enums import PurchaseStatus
+
+
+@dataclass(frozen=True)
+class PurchaseData:
+    id: str
+    buyer: str
+    quantity: int
+    status: PurchaseStatus
 
 
 class Purchase(AggregateRoot[PurchaseId]):
@@ -51,3 +61,11 @@ class Purchase(AggregateRoot[PurchaseId]):
                 "Cannot change the status of a cancelled or delivered order"
             )
         self.__status = new_status
+
+    def get_data(self) -> PurchaseData:
+        return PurchaseData(
+            id=self.id.value,
+            buyer=self.buyer.value,
+            quantity=self.quantity.value,
+            status=self.status,
+        )

@@ -1,2 +1,2 @@
-from .description import Description
-from .name import Name
+from .description import Description, DescriptionData
+from .name import Name, NameData
