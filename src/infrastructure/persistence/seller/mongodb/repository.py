@@ -140,6 +140,7 @@ class MongoDBSellerRepository(SellerRepository):
                 update = False
                 for i, purch in enumerate(new_purchases):
                     if purch["id"] == purchase.id.value:
+                        print("updating...")
                         new_purchases[i] = {
                             "id": purchase.id.value,
                             "sellerId": item.id.value,
@@ -160,10 +161,10 @@ class MongoDBSellerRepository(SellerRepository):
                         }
                     )
 
-                    self.buyer_collection.update_one(
-                        {"id": buyer_data["id"]},
-                        {"$set": {"purchases": new_purchases}},
-                    )
+                self.buyer_collection.update_one(
+                    {"id": buyer_data["id"]},
+                    {"$set": {"purchases": new_purchases}},
+                )
 
     def delete(self, item: Seller):
         if not self._seller_already_exists(item):
