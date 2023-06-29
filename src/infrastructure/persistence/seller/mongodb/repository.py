@@ -140,7 +140,6 @@ class MongoDBSellerRepository(SellerRepository):
                 update = False
                 for i, purch in enumerate(new_purchases):
                     if purch["id"] == purchase.id.value:
-                        print("updating...")
                         new_purchases[i] = {
                             "id": purchase.id.value,
                             "sellerId": item.id.value,
