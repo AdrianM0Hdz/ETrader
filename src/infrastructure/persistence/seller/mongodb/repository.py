@@ -1,3 +1,9 @@
+"""
+TODO: move all serlialization and de serialization to 
+a serializer for this aaggregate and inject it as a dependency in 
+the constructor 
+"""
+
 from typing import List, Dict
 
 from pymongo.collection import Collection
@@ -124,11 +130,26 @@ class MongoDBSellerRepository(SellerRepository):
             {"$set": self._serialize_seller(item)},
         )
         for product in item.products:
-            for purchases in item.get_purchases_of_product(product):
-                for purchase in purchases:
-                    buyer_data = self.buyer_collection.find_one(
-                        {"id": purchase.buyer.value}
-                    )
+            for purchase in item.get_purchases_of_product(product):
+                buyer_data = self.buyer_collection.find_one(
+                    {"id": purchase.buyer.value}
+                )
+                assert buyer_data is not None
+                new_purchases = buyer_data["purchases"]
+
+                update = False
+                for i, purch in new_purchases:
+                    if purch == purchase:
+                        new_purchases[i] = purchase
+                        update = True
+
+                if not update:
+                    new_purchases.append(purchase)
+
+                self.buyer_collection.update_one(
+                    {"id": buyer_data["id"]},
+                    {"$set": {"purchases": new_purchases}},
+                )
 
     def delete(self, item: Seller):
         if not self._seller_already_exists(item):
