@@ -15,6 +15,12 @@ from src.application.commands.register_product import (
 from src.application.commands.register_purchase import (
     RegisterPurchase as RegisterPurchaseService,
 )
+from src.application.commands.mark_purchase_as_delivered import (
+    MarkPurchaseAsDelivered as MarkPurchaseAsDeliveredService,
+)
+from src.application.commands.mark_purchase_as_canceled import (
+    MarkPurchaseAsCanceled as MarkPurchaseAsCanceledService,
+)
 
 from src.infrastructure.persistence.seller.mongodb.repository import (
     MongoDBSellerRepository,
@@ -39,6 +45,9 @@ buyer_query_set = BuyerQuerySet(buyer_collection=buyer_collection)
 register_seller_service = RegisterSellerService(seller_repo)
 register_product_servie = RegisterProductService(seller_repo)
 register_purchase_service = RegisterPurchaseService(seller_repo)
+mark_purchase_as_delivered_service = MarkPurchaseAsDeliveredService(seller_repo)
+mark_purchase_as_canceled_service = MarkPurchaseAsCanceledService(seller_repo)
+
 ### COMMANDS ###
 
 
@@ -98,6 +107,34 @@ def register_purchase():
         quantity_int=data["quantity"],
     )
 
+    return jsonify(msg="OK")
+
+
+@app.route("/command/mark_purchase_as_delivered", methods=["POST"])
+def mark_purchase_as_delivered():
+    data = request.get_json()
+    if not data:
+        return jsonify(msg="no body found"), 400
+
+    mark_purchase_as_delivered_service(
+        seller_id_str=data["seller_id"],
+        product_id_str=data["product_id"],
+        purchase_id_str=data["purchase_id"],
+    )
+    return jsonify(msg="OK")
+
+
+@app.route("/command/mark_purchase_as_canceled", methods=["POST"])
+def mark_purchase_as_canceled():
+    data = request.get_json()
+    if not data:
+        return jsonify(msg="no body found"), 400
+
+    mark_purchase_as_canceled_service(
+        seller_id_str=data["seller_id"],
+        product_id_str=data["product_id"],
+        purchase_id_str=data["purchase_id"],
+    )
     return jsonify(msg="OK")
 
 
