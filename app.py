@@ -9,6 +9,13 @@ from src.infrastructure.persistence.buyer.mongodb.repository import (
 from src.application.commands.register_seller import (
     RegisterSeller as RegisterSellerService,
 )
+from src.application.commands.register_product import (
+    RegisterProduct as RegisterProductService,
+)
+from src.application.commands.register_purchase import (
+    RegisterPurchase as RegisterPurchaseService,
+)
+
 from src.infrastructure.persistence.seller.mongodb.repository import (
     MongoDBSellerRepository,
 )
@@ -30,6 +37,9 @@ register_buyer_service = RegisterBuyerService(buyer_repo)
 buyer_query_set = BuyerQuerySet(buyer_collection=buyer_collection)
 
 register_seller_service = RegisterSellerService(seller_repo)
+register_product_servie = RegisterProductService(seller_repo)
+register_purchase_service = RegisterPurchaseService(seller_repo)
+### COMMANDS ###
 
 
 @app.route("/resource/buyer", methods=["POST"])
@@ -56,6 +66,42 @@ def register_seller():
     register_seller_service(name, description)
 
     return jsonify(msg="OK")
+
+
+@app.route("/command/register_product", methods=["POST"])
+def register_product():
+    data = request.get_json()
+    if not data:
+        return jsonify(msg="no body found"), 400
+
+    register_product_servie(
+        seller_id_str=data["seller_id"],
+        product_name_str=data["product_name"],
+        product_description_str=data["product_description"],
+        price_ammount_float=data["price_ammount"],
+        price_currency_str=data["price_currency"],
+    )
+
+    return jsonify(msg="OK")
+
+
+@app.route("/command/register_purchase", methods=["POST"])
+def register_purchase():
+    data = request.get_json()
+    if not data:
+        return jsonify(msg="no body found"), 400
+
+    register_purchase_service(
+        buyer_id_str=data["buyer_id"],
+        seller_id_str=data["seller_id"],
+        product_id_str=data["product_id"],
+        quantity_int=data["quantity"],
+    )
+
+    return jsonify(msg="OK")
+
+
+### QUERIES ###
 
 
 @app.route("/queries/buyer/<string:id>", methods=["GET"])

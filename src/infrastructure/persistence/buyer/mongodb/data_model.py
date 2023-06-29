@@ -7,6 +7,7 @@ MongoDB Data Model:
     "name": <string>
     "purchases": [
         {
+            "sellerId": <string>
             "productId": <string>
             "quantity": <int > 0>
             "status": "TO_BE_DELIVERED" | "DELIVERED" | "CANCELED"

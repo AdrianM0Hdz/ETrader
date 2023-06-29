@@ -11,7 +11,7 @@ class SellerRepository(Repository, ABC):
         ...
 
     @abstractmethod
-    def get(self, id: SellerId):
+    def get(self, id: SellerId) -> Seller:
         ...
 
     @abstractmethod

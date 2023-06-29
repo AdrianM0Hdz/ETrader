@@ -27,7 +27,7 @@ class Product(Entity[ProductId]):
     def create_new(
         cls, name: Name, descriptioin: Description, price: Price
     ) -> "Product":
-        id = ProductId(uuid1())
+        id = ProductId(str(uuid1()))
         return cls(id, name, descriptioin, price)
 
     @property

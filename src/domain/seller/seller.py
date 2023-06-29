@@ -88,6 +88,7 @@ class Seller(AggregateRoot[SellerId]):
             if product.id == product_id:
                 new_purchase = Purchase.create_new(buyer_id, quantity)
                 self.__products[product].append(new_purchase)
+                return
         raise BaseException("Seller does not offer product with that id")
 
     def _get_purchase(self, product_id: ProductId, purchase_id: PurchaseId) -> Purchase:
