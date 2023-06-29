@@ -1,7 +1,7 @@
 from uuid import uuid1
 
-from domain.common.aggregate_root import Entity
-from domain.common.values import Name, Description
+from src.domain.common.aggregate_root import Entity
+from src.domain.common.values import Name, Description
 from .values import ProductId, Price
 
 

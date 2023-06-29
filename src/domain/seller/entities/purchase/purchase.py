@@ -2,9 +2,9 @@ from dataclasses import dataclass
 from uuid import uuid1
 
 
-from domain.common.aggregate_root import Entity
+from src.domain.common.aggregate_root import Entity
 
-from domain.buyer.values import BuyerId
+from src.domain.buyer.values import BuyerId
 
 from .values import PurchaseId, Quantity
 
