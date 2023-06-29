@@ -1,21 +1,17 @@
 from pymongo.collection import Collection
 
+from src.domain.common.values import Name
+
 from src.domain.buyer import Buyer
-from src.domain.buyer.buyer import BuyerData
 from src.domain.buyer.values import BuyerId
 from src.domain.buyer.repository import BuyerRepository
-
-from .data_model import (
-    make_data_model_from_domain_model,
-    make_domain_model_from_data_model,
-)
 
 
 class MongoDBBuyerRepository(BuyerRepository):
     def __init__(self, buyer_collection: Collection):
         self.buyer_collection = buyer_collection
 
-    def _buyer_already_exists(self, buyer: BuyerData) -> bool:
+    def _buyer_already_exists(self, buyer: Buyer) -> bool:
         buyer_data = self.buyer_collection.find_one({"id": buyer.id.value})
         return buyer_data is not None
 
@@ -23,19 +19,23 @@ class MongoDBBuyerRepository(BuyerRepository):
         data = self.buyer_collection.find_one({"id": id.value})
         if data is None:
             raise FileNotFoundError("There is no buyer with that id")
-        return Buyer(data["id"], data["name"])
+        return Buyer(BuyerId(data["id"]), Name(data["name"]))
 
-    def add(self, item: BuyerData):
+    def add(self, item: Buyer):
         if self._buyer_already_exists(item):
             raise ValueError("Buyer with that id alreay exits in buyer_collection")
-        data_item = make_data_model_from_domain_model(item)
-        self.buyer_collection.insert_one(data_item)
+        self.buyer_collection.insert_one(
+            {"id": item.id.value, "name": item.name.value, "purchases": []}
+        )
 
-    def commit(self, item: BuyerData):
+    def commit(self, item: Buyer):
         if not self._buyer_already_exists(item):
             raise ValueError("Cannot update an item that does not exists")
+        self.buyer_collection.update_one(
+            {"id": item.id.value}, {"$set": {"name": item.name.value}}
+        )
 
-    def delete(self, item: BuyerData):
+    def delete(self, item: Buyer):
         if not self._buyer_already_exists(item):
             raise ValueError("Cannot delete an item that does not exist")
         self.buyer_collection.delete_one({"id": item.id.value})

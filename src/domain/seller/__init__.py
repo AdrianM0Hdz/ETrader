@@ -1,1 +1,1 @@
-from .seller import Seller, SellerData
+from .seller import Seller

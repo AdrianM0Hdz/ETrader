@@ -67,6 +67,12 @@ class Seller(AggregateRoot[SellerId]):
     def products(self) -> Tuple[Product]:
         return tuple(self.__products.keys())
 
+    def get_purchases_of_product(self, product: Product) -> List[Purchase]:
+        purchases = self.__products.get(product)
+        if purchases is None:
+            raise ValueError("Seller does not set such product")
+        return purchases
+
     def register_product(
         self, product_name: Name, product_description: Description, product_price: Price
     ):

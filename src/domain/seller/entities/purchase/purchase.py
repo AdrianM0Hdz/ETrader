@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from uuid import uuid1
 
 
-from domain.common.aggregate_root import AggregateRoot
+from domain.common.aggregate_root import Entity
 
 from domain.buyer.values import BuyerId
 
@@ -11,7 +11,7 @@ from .values import PurchaseId, Quantity
 from .enums import PurchaseStatus
 
 
-class Purchase(AggregateRoot[PurchaseId]):
+class Purchase(Entity[PurchaseId]):
     def __init__(
         self, id: PurchaseId, buyer: BuyerId, quantity: Quantity, status: PurchaseStatus
     ):

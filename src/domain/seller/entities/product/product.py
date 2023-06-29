@@ -1,12 +1,11 @@
-from dataclasses import dataclass
 from uuid import uuid1
 
-from domain.common.aggregate_root import AggregateRoot
-from domain.common.values import Name, NameData, Description, DescriptionData
+from domain.common.aggregate_root import Entity
+from domain.common.values import Name, Description
 from .values import ProductId, Price
 
 
-class Product(AggregateRoot[ProductId]):
+class Product(Entity[ProductId]):
     def __init__(
         self,
         id: ProductId,
