@@ -6,6 +6,8 @@ from src.infrastructure.persistence.buyer.mongodb.repository import (
     MongoDBBuyerRepository,
 )
 
+# COMMANDS
+
 from src.application.commands.register_seller import (
     RegisterSeller as RegisterSellerService,
 )
@@ -22,11 +24,22 @@ from src.application.commands.mark_purchase_as_canceled import (
     MarkPurchaseAsCanceled as MarkPurchaseAsCanceledService,
 )
 
+# QUERIES
+
+from src.application.queries.get_buyer_by_id import (
+    GetBuyerById as GetBuyerByIdService,
+    BuyerPurchaseData,
+)
+
+
 from src.infrastructure.persistence.seller.mongodb.repository import (
     MongoDBSellerRepository,
 )
 
-from src.infrastructure.persistence.buyer.queries.buyer_query_set import BuyerQuerySet
+from src.infrastructure.persistence.queries.mongodb.get_buyer_by_id import (
+    GetBuyerByIdMongoDB,
+)
+
 
 app = Flask(__name__)
 client = MongoClient("mongodb://localhost:27017")
@@ -39,14 +52,22 @@ seller_repo = MongoDBSellerRepository(
     seller_collection=seller_collection, buyer_collection=buyer_collection
 )
 
+# command use cases
+
 register_buyer_service = RegisterBuyerService(buyer_repo)
-buyer_query_set = BuyerQuerySet(buyer_collection=buyer_collection)
 
 register_seller_service = RegisterSellerService(seller_repo)
 register_product_servie = RegisterProductService(seller_repo)
 register_purchase_service = RegisterPurchaseService(seller_repo)
 mark_purchase_as_delivered_service = MarkPurchaseAsDeliveredService(seller_repo)
 mark_purchase_as_canceled_service = MarkPurchaseAsCanceledService(seller_repo)
+
+# queries use cases
+
+# just assigned to a variable to avoid thight coupling
+get_buyer_by_id_service: GetBuyerByIdService = GetBuyerByIdMongoDB(
+    buyer_collection=buyer_collection
+)
 
 ### COMMANDS ###
 
@@ -141,13 +162,29 @@ def mark_purchase_as_canceled():
 ### QUERIES ###
 
 
-@app.route("/queries/buyer/<string:id>", methods=["GET"])
-def get_buyer(id):
-    data = buyer_query_set.find_one_by_id(id)
-    if data is None:
-        return jsonify(), 400
-    data["_id"] = str(data["_id"])
-    return jsonify(**data)
+@app.route("/query/get_buyer_by_id", methods=["GET"])
+def get_buyer_by_id():
+    def _buyer_purchase_data_to_dict(data: BuyerPurchaseData):
+        return {
+            "id": data.id,
+            "sellerId": data.seller_id,
+            "productId": data.product_id,
+            "quantity": data.quantity,
+            "status": data.status,
+        }
+
+    data = request.get_json()
+    if not data:
+        return jsonify(msg="no body found"), 400
+
+    raw_buyer_id = data["userId"]
+    buyer_data = get_buyer_by_id_service(user_id=raw_buyer_id)
+
+    return jsonify(
+        id=buyer_data.id,
+        name=buyer_data.name,
+        purchases=list(map(_buyer_purchase_data_to_dict, buyer_data.purchases)),
+    )
 
 
 if __name__ == "__main__":
