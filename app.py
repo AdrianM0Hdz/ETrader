@@ -1,6 +1,7 @@
 from typing import List, Tuple
 
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 from pymongo import MongoClient
 
 from src.application.register_buyer import RegisterBuyer as RegisterBuyerService
@@ -54,6 +55,7 @@ from src.infrastructure.persistence.queries.mongodb.get_seller_by_id import (
 )
 
 app = Flask(__name__)
+CORS(app)
 client = MongoClient("mongodb://localhost:27017")
 
 buyer_collection = client.ETrader.buyer
@@ -177,7 +179,7 @@ def mark_purchase_as_canceled():
 ### QUERIES ###
 
 
-@app.route("/query/get_buyer_by_id", methods=["GET"])
+@app.route("/query/get_buyer_by_id", methods=["POST"])
 def get_buyer_by_id():
     def _buyer_purchase_data_to_dict(data: BuyerPurchaseData) -> dict:
         return {
@@ -202,7 +204,7 @@ def get_buyer_by_id():
     )
 
 
-@app.route("/query/get_seller_by_id", methods=["GET"])
+@app.route("/query/get_seller_by_id", methods=["POST"])
 def get_seller_by_id():
     def _product_purchase_data_to_dict(data: ProductPurchaseData) -> dict:
         return {
