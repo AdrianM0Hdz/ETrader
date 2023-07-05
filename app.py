@@ -89,7 +89,7 @@ get_seller_by_id_service: GetSellerByIdService = GetSellerByIdMongoDB(
 ### COMMANDS ###
 
 
-@app.route("/resource/buyer", methods=["POST"])
+@app.route("/command/register_buyer", methods=["POST"])
 def register_buyer():
     data = request.get_json()
     if not data:
@@ -101,7 +101,7 @@ def register_buyer():
     return jsonify(msg="Ok")
 
 
-@app.route("/resource/seller", methods=["POST"])
+@app.route("/command/register_seller", methods=["POST"])
 def register_seller():
     data = request.get_json()
     if not data:
@@ -191,10 +191,11 @@ def get_buyer_by_id():
         }
 
     data = request.get_json()
-    if not data:
+
+    if not data or data == {}:
         return jsonify(msg="no body found"), 400
 
-    raw_buyer_id = data["buyerId"]
+    raw_buyer_id = data["id"]
     buyer_data = get_buyer_by_id_service(user_id=raw_buyer_id)
 
     return jsonify(
@@ -240,7 +241,7 @@ def get_seller_by_id():
     if not data:
         return jsonify(msg="no body found"), 400
 
-    raw_seller_id = data["sellerId"]
+    raw_seller_id = data["id"]
     seller_data = get_seller_by_id_service(seller_id=raw_seller_id)
 
     return jsonify(
