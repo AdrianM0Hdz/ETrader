@@ -4,38 +4,40 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from pymongo import MongoClient
 
-from src.application.register_buyer import RegisterBuyer as RegisterBuyerService
-from src.infrastructure.persistence.buyer.mongodb.repository import (
+from src.sales_and_purchases.application.commands.register_buyer import (
+    RegisterBuyer as RegisterBuyerService,
+)
+from src.sales_and_purchases.infrastructure.persistence.buyer.mongodb.repository import (
     MongoDBBuyerRepository,
 )
 
 # COMMANDS
 
-from src.application.commands.register_seller import (
+from src.sales_and_purchases.application.commands.register_seller import (
     RegisterSeller as RegisterSellerService,
 )
-from src.application.commands.register_product import (
+from src.sales_and_purchases.application.commands.register_product import (
     RegisterProduct as RegisterProductService,
 )
-from src.application.commands.register_purchase import (
+from src.sales_and_purchases.application.commands.register_purchase import (
     RegisterPurchase as RegisterPurchaseService,
 )
-from src.application.commands.mark_purchase_as_delivered import (
+from src.sales_and_purchases.application.commands.mark_purchase_as_delivered import (
     MarkPurchaseAsDelivered as MarkPurchaseAsDeliveredService,
 )
-from src.application.commands.mark_purchase_as_canceled import (
+from src.sales_and_purchases.application.commands.mark_purchase_as_canceled import (
     MarkPurchaseAsCanceled as MarkPurchaseAsCanceledService,
 )
 
 # QUERIES
 
-from src.application.queries.get_buyer_by_id import (
+from src.sales_and_purchases.application.queries.get_buyer_by_id import (
     GetBuyerById as GetBuyerByIdService,
     BuyerPurchaseData,
 )
 
 
-from src.application.queries.get_seller_by_id import (
+from src.sales_and_purchases.application.queries.get_seller_by_id import (
     GetSellerById as GetSellerByIdService,
     SellerData,
     SellerProductData,
@@ -43,14 +45,14 @@ from src.application.queries.get_seller_by_id import (
     ProductPurchaseData,
 )
 
-from src.infrastructure.persistence.seller.mongodb.repository import (
+from src.sales_and_purchases.infrastructure.persistence.seller.mongodb.repository import (
     MongoDBSellerRepository,
 )
 
-from src.infrastructure.persistence.queries.mongodb.get_buyer_by_id import (
+from src.sales_and_purchases.infrastructure.persistence.queries.mongodb.get_buyer_by_id import (
     GetBuyerByIdMongoDB,
 )
-from src.infrastructure.persistence.queries.mongodb.get_seller_by_id import (
+from src.sales_and_purchases.infrastructure.persistence.queries.mongodb.get_seller_by_id import (
     GetSellerByIdMongoDB,
 )
 
@@ -98,7 +100,7 @@ def register_buyer():
     name = data["name"]
     register_buyer_service(name)
 
-    return jsonify(msg="Ok")
+    return jsonify(msg="OK")
 
 
 @app.route("/command/register_seller", methods=["POST"])
@@ -122,11 +124,11 @@ def register_product():
         return jsonify(msg="no body found"), 400
 
     register_product_servie(
-        seller_id_str=data["seller_id"],
-        product_name_str=data["product_name"],
-        product_description_str=data["product_description"],
-        price_ammount_float=data["price_ammount"],
-        price_currency_str=data["price_currency"],
+        seller_id_str=data["sellerId"],
+        product_name_str=data["name"],
+        product_description_str=data["description"],
+        price_ammount_float=data["price"]["ammount"],
+        price_currency_str=data["price"]["currency"],
     )
 
     return jsonify(msg="OK")
@@ -139,9 +141,9 @@ def register_purchase():
         return jsonify(msg="no body found"), 400
 
     register_purchase_service(
-        buyer_id_str=data["buyer_id"],
-        seller_id_str=data["seller_id"],
-        product_id_str=data["product_id"],
+        buyer_id_str=data["buyerId"],
+        seller_id_str=data["sellerId"],
+        product_id_str=data["productId"],
         quantity_int=data["quantity"],
     )
 
@@ -155,9 +157,9 @@ def mark_purchase_as_delivered():
         return jsonify(msg="no body found"), 400
 
     mark_purchase_as_delivered_service(
-        seller_id_str=data["seller_id"],
-        product_id_str=data["product_id"],
-        purchase_id_str=data["purchase_id"],
+        seller_id_str=data["sellerId"],
+        product_id_str=data["productId"],
+        purchase_id_str=data["purchaseId"],
     )
     return jsonify(msg="OK")
 
@@ -169,9 +171,9 @@ def mark_purchase_as_canceled():
         return jsonify(msg="no body found"), 400
 
     mark_purchase_as_canceled_service(
-        seller_id_str=data["seller_id"],
-        product_id_str=data["product_id"],
-        purchase_id_str=data["purchase_id"],
+        seller_id_str=data["sellerId"],
+        product_id_str=data["productId"],
+        purchase_id_str=data["purchaseId"],
     )
     return jsonify(msg="OK")
 
