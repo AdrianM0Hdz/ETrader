@@ -1,6 +1,6 @@
 from abc import abstractmethod
 
-from shared_kernel.domain.repository import Repository
+from src.shared_kernel.domain.repository import Repository
 
 from .user_credentials import UserCredentials
 from .values import UserCredentialsId, UserId

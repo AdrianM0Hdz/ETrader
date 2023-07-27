@@ -56,23 +56,48 @@ from src.sales_and_purchases.infrastructure.persistence.queries.mongodb.get_sell
     GetSellerByIdMongoDB,
 )
 
+from src.shared_kernel.infrastructure.observer.event_manager import (
+    ConcreteEventManager,
+)
+
+from src.auth.application.commands.register_user_credentials import (
+    RegisterUserCredentials,
+)
+from src.auth.application.commands.verify_user_password import VerifyUserPassword
+
+from src.auth.infrastructure.persistence.user_credentials.mongodb.repository import (
+    MongoDBUserCredentialsRepository,
+)
+from src.auth.infrastructure.observer.subscriber import UserCreationSubscriber
+
+from src.shared_kernel.domain.events.seller_created import SellerCreated
+from src.shared_kernel.domain.events.buyer_created import BuyerCreated
+
+
+# observer infrastructure
+event_manager = ConcreteEventManager()
+
 app = Flask(__name__)
 CORS(app)
 client = MongoClient("mongodb://localhost:27017")
 
 buyer_collection = client.ETrader.buyer
 seller_collection = client.ETrader.seller
+credentials_collection = client.ETrader.user_credentials
 
 buyer_repo = MongoDBBuyerRepository(buyer_collection=buyer_collection)
 seller_repo = MongoDBSellerRepository(
     seller_collection=seller_collection, buyer_collection=buyer_collection
 )
+user_credentials_repo = MongoDBUserCredentialsRepository(
+    user_credentials_collection=credentials_collection
+)
 
 # command use cases
 
-register_buyer_service = RegisterBuyerService(buyer_repo)
+register_buyer_service = RegisterBuyerService(buyer_repo, event_manager)
 
-register_seller_service = RegisterSellerService(seller_repo)
+register_seller_service = RegisterSellerService(seller_repo, event_manager)
 register_product_servie = RegisterProductService(seller_repo)
 register_purchase_service = RegisterPurchaseService(seller_repo)
 mark_purchase_as_delivered_service = MarkPurchaseAsDeliveredService(seller_repo)
@@ -87,6 +112,24 @@ get_buyer_by_id_service: GetBuyerByIdService = GetBuyerByIdMongoDB(
 get_seller_by_id_service: GetSellerByIdService = GetSellerByIdMongoDB(
     seller_collection=seller_collection
 )
+
+
+# user cretentials use cases
+
+register_user_credentials = RegisterUserCredentials(
+    user_credentials_repository=user_credentials_repo
+)
+
+verify_user_password = VerifyUserPassword(
+    user_credentials_repository=user_credentials_repo
+)
+
+user_creation_subscriber = UserCreationSubscriber(
+    register_user_credentials_service=register_user_credentials
+)
+event_manager.subscribe(SellerCreated, user_creation_subscriber)
+event_manager.subscribe(BuyerCreated, user_creation_subscriber)
+
 
 ### COMMANDS ###
 

@@ -7,8 +7,6 @@ class RegisterUserCredentials:
     def __init__(self, user_credentials_repository: UserCredentialsRepository):
         self.user_credentials_repository = user_credentials_repository
 
-    def __call__(self, raw_user_id: str, raw_password: str):
-        user_credentials = UserCredentials.create_new(
-            UserId(raw_user_id), PasswordHash(raw_password)
-        )
+    def __call__(self, raw_user_id: str):
+        user_credentials = UserCredentials.create_new(UserId(raw_user_id))
         self.user_credentials_repository.add(user_credentials)

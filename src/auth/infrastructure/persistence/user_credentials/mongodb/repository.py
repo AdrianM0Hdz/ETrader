@@ -17,7 +17,7 @@ class MongoDBUserCredentialsRepository(UserCredentialsRepository):
         return {
             "id": item.id.value,
             "userId": item.user_id.value,
-            "passwordHash": item.password_hash.value,
+            "passwordHash": item.password_hash.value if item.password_hash else None,
         }
 
     def _deserialize_user_credentials(self, raw_item: dict) -> UserCredentials:

@@ -6,11 +6,11 @@ from .subscriber import Subscriber
 
 class EventManager(ABC):
     @abstractmethod
-    def subscribe(self, event: Event, subcriber: Subscriber):
+    def subscribe(self, event_type: type, subcriber: Subscriber):
         ...
 
     @abstractmethod
-    def unsubscribe(self, event: Event, subscriber: Subscriber):
+    def unsubscribe(self, event_type: type, subscriber: Subscriber):
         ...
 
     @abstractmethod
