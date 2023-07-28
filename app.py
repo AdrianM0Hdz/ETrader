@@ -65,6 +65,8 @@ from src.auth.application.commands.register_user_credentials import (
 )
 from src.auth.application.commands.verify_user_password import VerifyUserPassword
 
+from src.auth.application.commands.set_user_password import SetUserPassword
+
 from src.auth.infrastructure.persistence.user_credentials.mongodb.repository import (
     MongoDBUserCredentialsRepository,
 )
@@ -120,6 +122,10 @@ register_user_credentials = RegisterUserCredentials(
     user_credentials_repository=user_credentials_repo
 )
 
+set_user_password_service = SetUserPassword(
+    user_credentials_repository=user_credentials_repo
+)
+
 verify_user_password = VerifyUserPassword(
     user_credentials_repository=user_credentials_repo
 )
@@ -132,6 +138,15 @@ event_manager.subscribe(BuyerCreated, user_creation_subscriber)
 
 
 ### COMMANDS ###
+@app.route("/command/set_user_password", methods=["POST"])
+def set_user_password():
+    data = request.get_json()
+    if not data:
+        return jsonify(msg="no body found"), 400
+    raw_user_id = data["userId"]
+    raw_user_password = data["userPassword"]
+    set_user_password_service(raw_user_id=raw_user_id, raw_password=raw_user_password)
+    return jsonify(msg="OK")
 
 
 @app.route("/command/register_buyer", methods=["POST"])

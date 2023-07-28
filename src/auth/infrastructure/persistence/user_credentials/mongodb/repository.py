@@ -24,7 +24,9 @@ class MongoDBUserCredentialsRepository(UserCredentialsRepository):
         return UserCredentials(
             id=UserCredentialsId(raw_item["id"]),
             user_id=UserId(raw_item["userId"]),
-            password_hash=PasswordHash(raw_item["passwordHash"]),
+            password_hash=PasswordHash(raw_item["passwordHash"])
+            if raw_item["passwordHash"]
+            else None,
         )
 
     def _user_credentials_already_exist(self, user_credentials: UserCredentials):
@@ -56,7 +58,18 @@ class MongoDBUserCredentialsRepository(UserCredentialsRepository):
         return self._deserialize_user_credentials(serialized_item)
 
     def commit(self, item: UserCredentials):
-        raise NotImplementedError()
+        if not self._user_credentials_already_exist(item):
+            raise ValueError("cannot commit user credentials that do not exist")
+        self.user_credentials_collection.update_one(
+            {"id": item.id.value},
+            {
+                "$set": {
+                    "passwordHash": item.password_hash.value
+                    if item.password_hash
+                    else None
+                }
+            },
+        )
 
     def delete(self, item: UserCredentials):
         raise NotImplementedError()
