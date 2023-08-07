@@ -149,6 +149,17 @@ def set_user_password():
     return jsonify(msg="OK")
 
 
+@app.route("/query/verify_user_password", methods=["POST"])
+def verify_user_password_endpoint():
+    data = request.get_json()
+    if not data:
+        return jsonify(msg="no body found"), 400
+    raw_password = data["password"]
+    raw_user_id = data["userId"]
+    verification_result = verify_user_password(raw_user_id, raw_password)
+    return jsonify(result=verification_result.value)
+
+
 @app.route("/command/register_buyer", methods=["POST"])
 def register_buyer():
     data = request.get_json()
