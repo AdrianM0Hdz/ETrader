@@ -28,6 +28,18 @@ class AuthController(Controller):
         self.set_user_password_service = set_user_password_service
         self.verify_user_password_service = verify_user_password_service
 
+        self.add_route(
+            "/set_user_password",
+            self.handle_set_user_password_request,
+            HTTPMethod.POST,
+        )
+
+        self.add_route(
+            "/verify_user_password",
+            self.handle_verify_user_password_request,
+            HTTPMethod.POST,
+        )
+
     @handler(SetUserPasswordRequest)
     def handle_set_user_password_request(
         self, request: SetUserPasswordRequest
