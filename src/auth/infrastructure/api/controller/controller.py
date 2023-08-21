@@ -4,12 +4,12 @@ from src.shared_kernel.infrastructure.api.controller import (
     Controller,
     handler,
     HTTPMethod,
+    success,
 )
 
 from src.auth.application.commands import (
     SetUserPassword,
     VerifyUserPassword,
-    RegisterUserCredentials,
 )
 
 from ..contracts import SetUserPasswordRequest, VerifyUserPasswordRequest
@@ -32,10 +32,22 @@ class AuthController(Controller):
     def handle_set_user_password_request(
         self, request: SetUserPasswordRequest
     ) -> Response:
-        ...
+        try:
+            self.set_user_password_service(
+                raw_user_id=request.user_id, raw_password=request.password
+            )
+            return success
+        except BaseException as e:
+            return jsonify(msg=str(e))
 
     @handler(VerifyUserPasswordRequest)
     def handle_verify_user_password_request(
         self, request: VerifyUserPasswordRequest
     ) -> Response:
-        ...
+        try:
+            self.verify_user_password_service(
+                raw_user_id=request.user_id, raw_password=request.password
+            )
+            return success
+        except BaseException as e:
+            return jsonify(msg=str(e))
